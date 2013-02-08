@@ -48,7 +48,7 @@ var node = document.getElementsByTagName('script')[0];
 node.parentNode.insertBefore(gads, node);
 })();
 </script>
-
+<script type="text/javascript" src="http://c04.oos4l.com/a/e/s22810"></script>
 <script type='text/javascript'>
 googletag.cmd.push(function() {
 #{o}

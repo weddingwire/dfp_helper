@@ -52,7 +52,7 @@ node.parentNode.insertBefore(gads, node);
 <script type='text/javascript'>
 googletag.cmd.push(function() {
 #{o}
-googletag.pubads().enableSingleRequest();
+//googletag.pubads().enableSingleRequest();
 googletag.enableServices();
 });
 </script>

@@ -58,5 +58,39 @@ googletag.enableServices();
 </script>
       END
     end
+
+    def dfp_helper_head_mobile
+      raw <<-END.strip
+<script type='text/javascript'>
+(function() {
+var useSSL = 'https:' == document.location.protocol;
+var src = (useSSL ? 'https:' : 'http:') +
+'//www.googletagservices.com/tag/js/gpt_mobile.js';
+document.write('<scr' + 'ipt src="' + src + '"></scr' + 'ipt>');
+})();
+</script>
+      END
+    end
+
+    def dfp_helper_mobile_tag(_i, options = {})
+      @@dfp_helper_id ||= (Time.now.to_f*1000).to_i
+      _id = options[:div_id]
+      _id ||= "div-gpt-ad-#{@@dfp_helper_id}-#{dfp_helper_slots.size}"
+      _size = options[:size] || _i.match(/\d+x\d+/)[0].split('x')
+      options.merge!({:id => _i, :div_id => _id, :size => _size})
+
+      raw <<-END.strip
+<div id='#{_id}' class="mobile-ad #{options[:div_class]}" style='width:#{_size[0]}px; height:#{_size[1]}px;'>
+<script type='text/javascript'>
+googletag.cmd.push(function() {
+googletag.defineSlot('#{_i}', #{options[:size]}, '#{options[:div_id]}').addService(googletag.pubads());
+googletag.enableServices();
+googletag.display('#{options[:div_id]}');
+});
+</script>
+</div>
+END
+    end
+
   end
 end

@@ -80,7 +80,7 @@ document.write('<scr' + 'ipt src="' + src + '"></scr' + 'ipt>');
       options.merge!({:id => _i, :div_id => _id, :size => _size})
 
       raw <<-END.strip
-<div id='#{_id}' class="mobile-ad #{options[:div_class]}" style='width:#{_size[0]}px; height:#{_size[1]}px;'>
+<div id='#{_id}' class='mobile-ad #{options[:div_class]}' style='width:#{_size[0]}px; height:#{_size[1]}px;'>
 <script type='text/javascript'>
 googletag.cmd.push(function() {
 googletag.defineSlot('#{_i}', #{options[:size]}, '#{options[:div_id]}').addService(googletag.pubads());

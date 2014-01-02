@@ -15,7 +15,7 @@ module DfpHelper
       _id ||= "div-gpt-ad-#{@@dfp_helper_id}-#{dfp_helper_slots.size}"
       _size = options[:size] || _i.match(/\d+x\d+/)[0].split('x')
       dfp_helper_slots << options.merge({:id => _i, :div_id => _id, :size => _size})
-      
+
       raw <<-END.strip
 <!-- #{_i} -->
 <div id='#{_id}' style='width:#{_size[0]}px; height:#{_size[1]}px;'>
@@ -45,10 +45,9 @@ var #{options[:slot_name]};
       o = dfp_helper_slots.collect{|i|
         _targeting = (i[:targeting]||[]).collect{|k,v| ".setTargeting(#{k.to_json}, #{v.to_json})"}.join
         _slot_name = (i[:slot_name].blank?)?"":"#{i[:slot_name]} = "
-        "#{_slot_name}googletag.defineSlot('#{i[:id]}', [#{i[:size].join(', ')}], '#{i[:div_id]}').addService(googletag.pubads())#{_targeting};"
+        "#{_slot_name}googletag.defineSlot('#{i[:id]}', [#{i[:size].map(&:to_s).join(', ')}], '#{i[:div_id]}').addService(googletag.pubads())#{_targeting};"
       }.join("\n")
       sra = "googletag.pubads().enableSingleRequest();" if options[:single_request]
-      
       raw <<-END.strip
 <script type='text/javascript'>
 var googletag = googletag || {};
@@ -58,7 +57,7 @@ var gads = document.createElement('script');
 gads.async = true;
 gads.type = 'text/javascript';
 var useSSL = 'https:' == document.location.protocol;
-gads.src = (useSSL ? 'https:' : 'http:') + 
+gads.src = (useSSL ? 'https:' : 'http:') +
 '//www.googletagservices.com/tag/js/gpt.js';
 var node = document.getElementsByTagName('script')[0];
 node.parentNode.insertBefore(gads, node);

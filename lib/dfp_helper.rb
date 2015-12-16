@@ -40,7 +40,7 @@ var #{options[:slot_name]};
       END
     end
     
-    def dfp_helper_head(options={single_request:true})
+    def dfp_helper_head(options={single_request:true, collapse_empty:true})
       return unless dfp_helper_slots.size > 0
       o = dfp_helper_slots.collect{|i|
         _targeting = (i[:targeting]||[]).collect{|k,v| ".setTargeting(#{k.to_json}, #{v.to_json})"}.join
@@ -48,6 +48,7 @@ var #{options[:slot_name]};
         "#{_slot_name}googletag.defineSlot('#{i[:id]}', [#{i[:size].map(&:to_s).join(', ')}], '#{i[:div_id]}').addService(googletag.pubads())#{_targeting};"
       }.join("\n")
       sra = "googletag.pubads().enableSingleRequest();" if options[:single_request]
+      collapse = "googletag.pubads().collapseEmptyDivs(true);" if options[:collapse_empty]
       raw <<-END.strip
 <script type='text/javascript'>
 var googletag = googletag || {};
@@ -68,6 +69,7 @@ node.parentNode.insertBefore(gads, node);
 googletag.cmd.push(function() {
 #{o}
 #{sra}
+#{collapse}
 googletag.enableServices();
 });
 </script>

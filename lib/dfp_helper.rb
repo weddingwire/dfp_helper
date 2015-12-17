@@ -23,7 +23,7 @@ module DfpHelper
 <script type='text/javascript'>
 googletag.cmd.push(function() {
   if(#{options[:hide_empty]}) {
-      window.ww_ad_slots['#{_i}'].setCollapseEmptyDiv(true);
+      window.gtag_ad_slots['#{_i}'].setCollapseEmptyDiv(true);
   }
   googletag.display('#{_id}');
 });
@@ -51,13 +51,13 @@ var #{options[:slot_name]};
       o = dfp_helper_slots.collect{|i|
         _targeting = (i[:targeting]||[]).collect{|k,v| ".setTargeting(#{k.to_json}, #{v.to_json})"}.join
         _slot_name = (i[:slot_name].blank?)?"":"#{i[:slot_name]} = "
-        "window.ww_ad_slots['#{i[:id]}'] = #{_slot_name}googletag.defineSlot('#{i[:id]}', [#{i[:size].map(&:to_s).join(', ')}], '#{i[:div_id]}').addService(googletag.pubads())#{_targeting};"
+        "window.gtag_ad_slots['#{i[:id]}'] = #{_slot_name}googletag.defineSlot('#{i[:id]}', [#{i[:size].map(&:to_s).join(', ')}], '#{i[:div_id]}').addService(googletag.pubads())#{_targeting};"
       }.join("\n")
       sra = "googletag.pubads().enableSingleRequest();" if options[:single_request]
       raw <<-END.strip
 <script type='text/javascript'>
 var googletag = googletag || {};
-var ww_ad_slots = ww_ad_slots || {};
+var gtag_ad_slots = gtag_ad_slots || {};
 googletag.cmd = googletag.cmd || [];
 (function() {
 var gads = document.createElement('script');

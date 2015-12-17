@@ -11,6 +11,7 @@ module DfpHelper
     end
     def dfp_helper_slot(_i, options = {})
       @@dfp_helper_id ||= (Time.now.to_f*1000).to_i
+      options[:hide_empty] ||= false
       _id = options[:div_id]
       _id ||= "div-gpt-ad-#{@@dfp_helper_id}-#{dfp_helper_slots.size}"
       _size = options[:size] || _i.match(/\d+x\d+/)[0].split('x')
@@ -20,7 +21,12 @@ module DfpHelper
 <!-- #{_i} -->
 <div id='#{_id}' style='width:#{_size[0]}px; height:#{_size[1]}px;' class='#{options[:div_class]}'>
 <script type='text/javascript'>
-googletag.cmd.push(function() { googletag.display('#{_id}'); });
+googletag.cmd.push(function() {
+  if(#{options[:hide_empty]}) {
+      window.ww_ad_slots['#{_i}'].setCollapseEmptyDiv(true);
+  }
+  googletag.display('#{_id}');
+});
 </script>
 </div>
       END
@@ -45,12 +51,13 @@ var #{options[:slot_name]};
       o = dfp_helper_slots.collect{|i|
         _targeting = (i[:targeting]||[]).collect{|k,v| ".setTargeting(#{k.to_json}, #{v.to_json})"}.join
         _slot_name = (i[:slot_name].blank?)?"":"#{i[:slot_name]} = "
-        "#{_slot_name}googletag.defineSlot('#{i[:id]}', [#{i[:size].map(&:to_s).join(', ')}], '#{i[:div_id]}').setCollapseEmptyDiv(true).addService(googletag.pubads())#{_targeting};"
+        "window.ww_ad_slots['#{i[:id]}'] = #{_slot_name}googletag.defineSlot('#{i[:id]}', [#{i[:size].map(&:to_s).join(', ')}], '#{i[:div_id]}').addService(googletag.pubads())#{_targeting};"
       }.join("\n")
       sra = "googletag.pubads().enableSingleRequest();" if options[:single_request]
       raw <<-END.strip
 <script type='text/javascript'>
 var googletag = googletag || {};
+var ww_ad_slots = ww_ad_slots || {};
 googletag.cmd = googletag.cmd || [];
 (function() {
 var gads = document.createElement('script');

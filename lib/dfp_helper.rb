@@ -100,12 +100,17 @@ document.write('<scr' + 'ipt src="' + src + '"></scr' + 'ipt>');
       _id ||= "div-gpt-ad-#{@@dfp_helper_id}-#{dfp_helper_slots.size}"
       _size = options[:size] || _i.match(/\d+x\d+/)[0].split('x')
       options.merge!({:id => _i, :div_id => _id, :size => _size})
+      options[:hide_empty] ||= false
 
       raw <<-END.strip
 <div id='#{_id}' class='mobile-ad #{options[:div_class]}'>
 <script type='text/javascript'>
 googletag.cmd.push(function() {
-googletag.defineSlot('#{_i}', #{options[:size]}, '#{options[:div_id]}').addService(googletag.pubads());
+var slot = googletag.defineSlot('#{_i}', #{options[:size]}, '#{options[:div_id]}')
+.addService(googletag.pubads());
+if(#{options[:hide_empty]}) {
+  slot.setCollapseEmptyDiv(true);
+}
 googletag.enableServices();
 googletag.display('#{options[:div_id]}');
 });

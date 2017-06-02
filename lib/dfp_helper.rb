@@ -15,11 +15,12 @@ module DfpHelper
       _id = options[:div_id]
       _id ||= "div-gpt-ad-#{@@dfp_helper_id}-#{dfp_helper_slots.size}"
       _size = options[:size] || _i.match(/\d+x\d+/)[0].split('x')
+      _styles = options[:responsive_mapping] ? '' : "width:#{_size[0]}px; height:#{_size[1]}px;"
       dfp_helper_slots << options.merge({:id => _i, :div_id => _id, :size => _size})
 
       raw <<-END.strip
 <!-- #{_i} -->
-<div id='#{_id}' style='width:#{_size[0]}px; height:#{_size[1]}px;' class='#{options[:div_class]}'>
+<div id='#{_id}' style=#{_styles} class='#{options[:div_class]}'>
 <script type='text/javascript'>
 googletag.cmd.push(function() {
   if(#{options[:hide_empty]}) {

@@ -15,11 +15,12 @@ module DfpHelper
       _id = options[:div_id]
       _id ||= "div-gpt-ad-#{@@dfp_helper_id}-#{dfp_helper_slots.size}"
       _size = options[:size] || _i.match(/\d+x\d+/)[0].split('x')
+      _styles = options[:responsive_mapping] ? '' : "width:#{_size[0]}px; height:#{_size[1]}px;"
       dfp_helper_slots << options.merge({:id => _i, :div_id => _id, :size => _size})
 
       raw <<-END.strip
 <!-- #{_i} -->
-<div id='#{_id}' style='width:#{_size[0]}px; height:#{_size[1]}px;' class='#{options[:div_class]}'>
+<div id='#{_id}' style=#{_styles} class='#{options[:div_class]}'>
 <script type='text/javascript'>
 googletag.cmd.push(function() {
   if(#{options[:hide_empty]}) {
@@ -51,8 +52,9 @@ var #{options[:slot_name]};
       o = dfp_helper_slots.collect{|i|
         _targeting = (i[:targeting]||[]).collect{|k,v| ".setTargeting(#{k.to_json}, #{v.to_json})"}.join
         _slot_name = (i[:slot_name].blank?)?"":"#{i[:slot_name]} = "
-        "window.gtag_ad_slots['#{i[:id]}'] = #{_slot_name}googletag.defineSlot('#{i[:id]}', [#{i[:size].map(&:to_s).join(', ')}], '#{i[:div_id]}').addService(googletag.pubads())#{_targeting};"
+        "window.gtag_ad_slots['#{i[:id]}'] = #{_slot_name}googletag.defineSlot('#{i[:id]}', [#{i[:size].map(&:to_s).join(', ')}], '#{i[:div_id]}')#{".defineSizeMapping(#{i[:responsive_mapping]})" if i[:responsive_mapping]}.addService(googletag.pubads())#{_targeting};"
       }.join("\n")
+
       sra = "googletag.pubads().enableSingleRequest();" if options[:single_request]
       raw <<-END.strip
 <script type='text/javascript'>
@@ -119,5 +121,23 @@ googletag.display('#{options[:div_id]}');
 END
     end
 
+    #
+    # browser_mapping is expecting 0+ arrays of [w,h] for ad sizes
+    # which will be permitted for that browser size
+    #
+    # browser_and_ad_sizes is expecting an array of arrays
+    # ex) *browser_mapping ==> [[320, 400], [320, 50]], [[1024, 768], [970, 250]]
+    #
+    # first array is browser size and every subsequent array is an ad size [w,h]
+    #
+
+    def responsive_gpt_mapping(*browser_mapping)
+      total_mapping = ''
+      browser_mapping.each do |mapping|
+        total_mapping += ".addSize(#{mapping.first},#{mapping[1..-1].map(&:to_s).join(',')})"
+      end
+
+      "googletag.sizeMapping()#{total_mapping}.build()"
+    end
   end
 end

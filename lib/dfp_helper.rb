@@ -52,7 +52,6 @@ var #{options[:slot_name]};
       o = dfp_helper_slots.collect{|i|
         _targeting = (i[:targeting]||[]).collect{|k,v| ".setTargeting(#{k.to_json}, #{v.to_json})"}.join
         _slot_name = (i[:slot_name].blank?)?"":"#{i[:slot_name]} = "
-        binding.pry
         "window.gtag_ad_slots['#{i[:id]}'] = #{_slot_name}googletag.defineSlot('#{i[:id]}', [#{i[:size].map(&:to_s).join(', ')}], '#{i[:div_id]}')#{".defineSizeMapping(#{i[:responsive_mapping]})" if i[:responsive_mapping]}.addService(googletag.pubads())#{_targeting};"
       }.join("\n")
 

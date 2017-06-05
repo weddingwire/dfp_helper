@@ -122,19 +122,13 @@ END
     end
 
     #
-    # browser_mapping's first param is expecting an array of [w,h] for browser
-    # to map responsive ad size to
-    #
     # browser_mapping is expecting 0+ arrays of [w,h] for ad sizes
     # which will be permitted for that browser size
     #
     # browser_and_ad_sizes is expecting an array of arrays
-    # ex) *browser_mapping ==> [[1024, 768], [970, 250]][[1024, 768], [970, 250]]
+    # ex) *browser_mapping ==> [[320, 400], [320, 50]], [[1024, 768], [970, 250]]
     #
     # first array is browser size and every subsequent array is an ad size [w,h]
-    #
-    # Assign responsive_gpt_mapping to a variable to pass to
-    # map_responsive_add_sizes()
     #
 
     def responsive_gpt_mapping(*browser_mapping)
